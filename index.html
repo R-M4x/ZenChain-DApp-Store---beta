@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenChain Store - Complete System</title>
+    <style>
+        :root {
+            --primary-green: #00FF88;
+            --secondary-cyan: #00CCDD;
+            --tertiary-lime: #88FF44;
+            --accent-yellow: #CCFF66;
+            --zen-gradient: linear-gradient(135deg, #CCFF66, #00FF88, #00CCDD);
+            --zen-text-gradient: linear-gradient(90deg, #CCFF66 0%, #00FF88 50%, #00CCDD 100%);
+            --background-dark: #0D1F1A;
+            --surface-green: #1A2E26;
+            --surface-light: #243530;
+            --surface-hover: #2F4138;
+            --text-light: #E8FFF3;
+            --text-secondary: #B8E6D1;
+            --text-muted: #8FA89D;
+            --border-green: rgba(0, 255, 136, 0.3);
+            --border-cyan: rgba(0, 204, 221, 0.3);
+            --glow-green: 0 0 20px rgba(0, 255, 136, 0.4);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --transition-medium: 0.3s ease-in-out;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--background-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+
+        /* Header Styles */
+        .header {
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(26, 46, 38, 0.9);
+            border-bottom: 1px solid var(--border-green);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem 0; gap: 2rem;
+        }
+
+        .logo-section { flex: 1; }
+
+        .logo-container { display: flex; align-items: center; gap: 1rem; }
+
+        .logo-image { width: 60px; height: 60px; border-radius: 50%; box-shadow: var(--glow-green); }
+
+        .store-title {
+            font-size: 2rem; font-weight: 800;
+            background: var(--zen-text-gradient);
+            background-clip: text; -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .store-tagline { font-size: 0.9rem; color: var(--text-secondary); }
+
+        .header-actions { display: flex; align-items: center; gap: 1rem; }
+
+        .wallet-section { display: flex; align-items: center; gap: 1rem; }
+
+        .wallet-info {
+            display: flex; flex-direction: column; align-items: flex-end;
+            padding: 0.5rem 1rem;
+            background: var(--surface-green);
+            border: 1px solid var(--border-green);
+            border-radius: 12px;
+        }
+
+        .wallet-address {
+            font-size: 0.85rem; font-weight: 600;
+            color: var(--primary-green);
+            font-family: monospace;
+        }
+
+        .wallet-balance { font-size: 0.75rem; color: var(--text-secondary); }
+
+        .wallet-btn, .cart-btn {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--surface-green);
+            border: 1px solid var(--border-green);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 0.9rem; font-weight: 500;
+            cursor: pointer; transition: var(--transition-medium);
+            text-decoration: none;
+        }
+
+        .wallet-btn:hover, .cart-btn:hover {
+            background: var(--surface-hover);
+            border-color: var(--primary-green);
+            box-shadow: var(--glow-green);
+        }
+
+        .connect-btn {
+            background: var(--zen-gradient);
+            color: var(--background-dark);
+            border: none;
+        }
+
+        .cart-counter {
+            background: var(--zen-gradient);
+            color: var(--background-dark);
+            font-size: 0.7rem; font-weight: 700;
+            padding: 0.2rem 0.5rem; border-radius: 10px;
+            min-width: 18px; text-align: center;
+            display: none;
+        }
+
+        /* Main Content */
+        .main { padding: 2rem 0; }
+
+        .hero { text-align: center; padding: 3rem 0; }
+
+        .hero-title {
+            font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;
+            background: var(--zen-text-gradient);
+            background-clip: text; -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-description {
+            font-size: 1.1rem; color: var(--text-secondary);
+            max-width: 600px; margin: 0 auto;
+        }
+
+        .store-controls { margin-bottom: 3rem; }
+
+        .controls-row {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 2rem; flex-wrap: wrap;
+        }
+
+        .category-filters { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+        .category-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--surface-green);
+            border: 1px solid var(--border-green);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 0.9rem; font-weight: 500;
+            cursor: pointer; transition: var(--transition-medium);
+        }
+
+        .category-btn:hover {
+            background: var(--surface-hover);
+            border-color: var(--primary-green);
+        }
+
+        .category-btn.active {
+            background: var(--zen-gradient);
+            color: var(--background-dark);
+            border-color: transparent;
+        }
+
+        .search-sort { display: flex; gap: 1rem; align-items: center; }
+
+        .search-container { display: flex; }
+
+        .search-input {
+            padding: 0.75rem 1rem;
+            background: var(--surface-green);
+            border: 1px solid var(--border-green);
+            border-radius: 12px 0 0 12px;
+            color: var(--text-light);
+            font-size: 0.9rem; width: 250px;
+        }
+
+        .search-btn {
+            padding: 0.75rem 1rem;
+            background: var(--zen-gradient);
+            border: none; border-radius: 0 12px 12px 0;
+            color: var(--background-dark);
+            cursor: pointer;
+        }
+
+        .sort-select {
+            padding: 0.75rem 1rem;
+            background: var(--surface-green);
+            border: 1px solid var(--border-green);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Products Grid */
+        .products-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem; margin-bottom: 3rem; min-height: 300px;
+        }
+
+        .product-card {
+            background: var(--surface-green);
+            border: 1px solid var(--border-green);
+            border-radius: 16px; padding: 1.5rem;
+            transition: var(--transition-medium);
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-green);
+            box-shadow: 0 12px 48px rgba(0, 255, 136, 0.2);
+        }
+
+        .product-card.sold-out {
+            opacity: 0.6;
+            background: var(--surface-light);
+        }
+
+        .product-image-container { margin-bottom: 1rem; text-align: center; }
+
+        .product-image {
+            width: 100%; height: 200px;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--surface-light);
+            border-radius: 12px; border: 2px solid var(--border-green);
+        }
+
+        .product-image.emoji { font-size: 4rem; }
+
+        .product-badge {
+            position: absolute; top: 1rem; right: 1rem;
+            background: var(--zen-gradient);
+            color: var(--background-dark);
+            font-size: 0.7rem; font-weight: 700;
+            padding: 0.3rem 0.6rem; border-radius: 8px;
+        }
+
+        .sold-out-badge {
+            position: absolute; top: 1rem; right: 1rem;
+            background: #ff4757; color: white;
+            font-size: 0.7rem; font-weight: 700;
+            padding: 0.3rem 0.6rem; border-radius: 8px;
+        }
+
+        .product-info { display: flex; flex-direction: column; gap: 0.75rem; }
+
+        .product-title { font-size: 1.1rem; font-weight: 700; color: var(--text-light); }
+
+        .product-description { font-size: 0.9rem; color: var(--text-secondary); }
+
+        .product-price-row {
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .product-price {
+            font-size: 1.2rem; font-weight: 700;
+            background: var(--zen-text-gradient);
+            background-clip: text; -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .delivery-badge {
+            background: var(--surface-light);
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-cyan);
+        }
+
+        .product-stock { font-size: 0.8rem; color: var(--text-muted); }
+
+        .product-stock.low-stock { color: #ffa502; font-weight: 600; }
+
+        .product-stock.sold-out { color: #ff4757; font-weight: 700; }
+
+        .product-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+
+        .quick-add {
+            flex: 1; padding: 0.75rem 1rem;
+            background: var(--zen-gradient);
+            border: none; border-radius: 10px;
+            color: var(--background-dark);
+            font-weight: 600; cursor: pointer;
+            transition: var(--transition-medium);
+        }
+
+        .quick-add:hover:not(:disabled) {
+            box-shadow: var(--glow-green);
+            transform: translateY(-2px);
+        }
+
+        .quick-add:disabled {
+            background: #666;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .wishlist-btn {
+            padding: 0.75rem; min-width: 45px;
+            background: transparent;
+            border: 1px solid var(--border-green);
+            border-radius: 10px; font-size: 1.2rem;
+            cursor: pointer; transition: var(--transition-medium);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .wishlist-btn:hover {
+            background: var(--surface-hover);
+            border-color: var(--primary-green);
+            transform: scale(1.1);
+        }
+
+        .wishlist-btn.loved {
+            background: rgba(255, 71, 87, 0.2);
+            border-color: #ff4757; color: #ff4757;
+        }
+
+        /* Cart Panel */
+        .cart-panel {
+            position: fixed; top: 0; right: -450px;
+            width: 450px; height: 100vh;
+            background: var(--surface-green);
+            border-left: 2px solid var(--border-green);
+            box-shadow: -10px 0 50px rgba(0, 0, 0, 0.5);
+            z-index: 2000; transition: var(--transition-medium);
+            display: flex; flex-direction: column;
+        }
+
+        .cart-panel.open { right: 0; }
+
+        .cart-overlay {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1999; opacity: 0; visibility: hidden;
+            transition: var(--transition-medium);
+        }
+
+        .cart-overlay.open { opacity: 1; visibility: visible; }
+
+        .cart-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1.5rem;
+            border-bottom: 2px solid var(--border-green);
+            background: var(--surface-light);
+        }
+
+        .cart-title {
+            font-size: 1.3rem; font-weight: 700;
+            background: var(--zen-text-gradient);
+            background-clip: text; -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cart-close {
+            background: none; border: none;
+            color: var(--text-muted); font-size: 1.8rem;
+            cursor: pointer; padding: 0.5rem; border-radius: 8px;
+        }
+
+        .cart-close:hover {
+            color: var(--primary-green);
+            background: var(--surface-hover);
+        }
+
+        .cart-content { flex: 1; display: flex; flex-direction: column; }
+
+        .cart-items {
+            flex: 1; padding: 1rem 1.5rem; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 1rem;
+        }
+
+        .empty-cart {
+            text-align: center; color: var(--text-muted);
+            padding: 3rem 1rem;
+            display: flex; flex-direction: column;
+            align-items: center; gap: 1rem;
+        }
+
+        .cart-item {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 1rem;
+            background: var(--surface-light);
+            border: 1px solid var(--border-green);
+            border-radius: 12px;
+        }
+
+        .cart-item-image {
+            width: 60px; height: 60px;
+            background: var(--surface-green);
+            border: 1px solid var(--border-green);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .cart-item-image.emoji { font-size: 1.8rem; }
+
+        .cart-item-info { flex: 1; }
+
+        .cart-item-name { font-weight: 600; color: var(--text-light); font-size: 0.95rem; }
+
+        .cart-item-price { color: var(--primary-green); font-size: 0.85rem; font-weight: 500; }
+
+        .quantity-controls {
+            display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem;
+        }
+
+        .quantity-btn {
+            width: 28px; height: 28px;
+            background: var(--zen-gradient);
+            border: none; border-radius: 6px;
+            color: var(--background-dark);
+            font-weight: 700; cursor: pointer;
+        }
+
+        .quantity-display {
+            min-width: 25px; text-align: center;
+            font-weight: 600; color: var(--text-light);
+        }
+
+        .cart-item-remove {
+            background: #ff4757; color: white;
+            border: none; border-radius: 6px;
+            width: 28px; height: 28px; cursor: pointer;
+        }
+
+        .cart-footer {
+            padding: 1.5rem;
+            border-top: 2px solid var(--border-green);
+            background: var(--surface-light);
+        }
+
+        .cart-total {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem; padding: 1rem;
+            background: var(--surface-green);
+            border: 1px solid var(--border-green);
+            border-radius: 12px;
+        }
+
+        .total-label { font-size: 1.1rem; font-weight: 600; color: var(--text-light); }
+
+        .total-amount {
+            font-size: 1.3rem; font-weight: 700;
+            background: var(--zen-text-gradient);
+            background-clip: text; -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cart-actions { display: flex; gap: 1rem; }
+
+        .clear-cart-btn {
+            flex: 1; padding: 0.75rem 1rem;
+            background: transparent;
+            border: 1px solid #ff4757;
+            border-radius: 10px; color: #ff4757;
+            font-weight: 600; cursor: pointer;
+        }
+
+        .checkout-btn {
+            flex: 2; padding: 0.75rem 1rem;
+            background: var(--zen-gradient);
+            border: none; border-radius: 10px;
+            color: var(--background-dark);
+            font-weight: 700; cursor: pointer;
+            transition: var(--transition-medium);
+        }
+
+        .checkout-btn:hover:not(:disabled) {
+            box-shadow: var(--glow-green);
+            transform: translateY(-2px);
+        }
+
+        .checkout-btn:disabled {
+            opacity: 0.6; cursor: not-allowed; transform: none;
+        }
+
+        .loading-message {
+            text-align: center; color: var(--text-secondary);
+            padding: 2rem; font-size: 1.1rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; gap: 1rem; }
+            .controls-row { flex-direction: column; align-items: stretch; gap: 1rem; }
+            .products-container { grid-template-columns: 1fr; }
+            .cart-panel { width: 100%; right: -100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <!-- Logo Section -->
+                <div class="logo-section">
+                    <div class="logo-container">
+                        <img src="/media/logos/zenchain-logo.png" alt="ZenChain Logo" class="logo-image">
+                        <div class="logo-text">
+                            <h1 class="store-title">ZenChain Store</h1>
+                            <p class="store-tagline">Complete Inventory Management System</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Header Actions -->
+                <div class="header-actions">
+                    <!-- Wallet Section -->
+                    <div class="wallet-section">
+                        <!-- When NOT connected -->
+                        <div id="wallet-disconnected" class="wallet-state">
+                            <button class="wallet-btn connect-btn" id="connect-wallet">
+                                <span>🔗</span>
+                                <span>Connect Wallet</span>
+                            </button>
+                        </div>
+
+                        <!-- When connected -->
+                        <div id="wallet-connected" class="wallet-state connected" style="display: none;">
+                            <div class="wallet-info">
+                                <div class="wallet-address" id="wallet-address">0x0000...0000</div>
+                                <div class="wallet-balance" id="wallet-balance">0.00 ZTC</div>
+                            </div>
+                            <button class="wallet-btn disconnect-btn" id="disconnect-wallet">
+                                <span>🔌</span>
+                                <span>Disconnect</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Cart Button -->
+                    <button class="cart-btn" id="cart-toggle">
+                        <span>🛒</span>
+                        <span>Cart</span>
+                        <span class="cart-counter" id="cart-counter">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero">
+                <h2 class="hero-title">Purchase digital and physical products with ZTC tokens</h2>
+                <p class="hero-description">Real inventory management with stock tracking and sold out indicators</p>
+            </section>
+
+            <!-- Store Controls -->
+            <section class="store-controls">
+                <div class="controls-row">
+                    <div class="category-filters">
+                        <button class="category-btn active" data-category="all">All Products</button>
+                        <button class="category-btn" data-category="digital">💳 Gift Cards</button>
+                        <button class="category-btn" data-category="nft">🖼️ NFTs</button>
+                        <button class="category-btn" data-category="gaming">🎮 Gaming</button>
+                        <button class="category-btn" data-category="apparel">👕 Apparel</button>
+                        <button class="category-btn" data-category="accessories">⌚ Accessories</button>
+                    </div>
+
+                    <div class="search-sort">
+                        <div class="search-container">
+                            <input type="text" id="search-input" placeholder="Search products..." class="search-input">
+                            <button class="search-btn">🔍</button>
+                        </div>
+
+                        <select id="sort-select" class="sort-select">
+                            <option value="">Sort by</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="name-az">Name A-Z</option>
+                            <option value="popularity">Most Popular</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Products Grid -->
+            <section class="products-section">
+                <div class="products-container" id="products-container">
+                    <div class="loading-message">Loading products...</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Shopping Cart Panel -->
+    <div class="cart-panel" id="cart-panel">
+        <div class="cart-header">
+            <h3 class="cart-title">🛒 Shopping Cart</h3>
+            <button class="cart-close" id="cart-close">&times;</button>
+        </div>
+
+        <div class="cart-content">
+            <div class="cart-items" id="cart-items">
+                <div class="empty-cart">Your cart is empty<br><small>Add some products to get started!</small></div>
+            </div>
+
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span class="total-label">Total:</span>
+                    <span class="total-amount" id="cart-total-amount">0.00 ZTC</span>
+                </div>
+
+                <div class="cart-actions">
+                    <button class="clear-cart-btn" id="clear-cart">Clear Cart</button>
+                    <button class="checkout-btn" id="checkout-btn">Checkout with ZTC</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Overlay -->
+    <div class="cart-overlay" id="cart-overlay"></div>
+
+    <!-- Load external libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.8.0/dist/ethers.umd.min.js"></script>
+
+    <!-- Complete JavaScript with Inventory Management -->
+    <script>
+        console.log('🚀 ZenChain Store - Complete System Loading...');
+
+        // Global App State with FULL PRODUCT LIST
+        window.appState = {
+            wallet: { connected: false, address: null, balance: '0', provider: null, signer: null, chainId: null },
+            contract: { instance: null, address: '0xBc3A065e47499227A1596CC64c7f417536654a82' },
+            cart: JSON.parse(localStorage.getItem('zenchain_cart') || '[]'),
+            wishlist: JSON.parse(localStorage.getItem('zenchain_wishlist') || '[]'),
+            products: [],
+            store: { currentCategory: 'all', searchTerm: '', sortFilter: '', cartOpen: false }
+        };
+
+        // ZenChain Network Configuration
+        const ZENCHAIN_CONFIG = {
+            chainId: 8408,
+            chainIdHex: '0x20D8',
+            chainName: 'ZenChain Testnet',
+            nativeCurrency: { name: 'ZenChain Token', symbol: 'ZTC', decimals: 18 },
+            rpcUrls: ['https://zenchain-testnet.api.onfinality.io/public'],
+            blockExplorerUrls: ['https://zentrace.io']
+        };
+
+        // Enhanced Notification System
+        function showNotification(message, type = 'success', duration = 4000) {
+            console.log(`[${type.toUpperCase()}] ${message}`);
+
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#00FF88' : type === 'error' ? '#ff4757' : type === 'warning' ? '#ffa502' : '#70a1ff'};
+                color: ${type === 'success' ? '#000' : '#fff'};
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                z-index: 9999;
+                max-width: 350px;
+                font-weight: 500;
+                transform: translateX(400px);
+                transition: transform 0.3s ease-in-out;
+                opacity: 0.95;
+            `;
+
+            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            notification.innerHTML = `${icons[type] || icons.info} ${message}`;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => { notification.style.transform = 'translateX(0)'; }, 100);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, duration);
+        }
+
+        // COMPLETE PRODUCT LIST - RESTORED (with inventory tracking)
+        function loadProducts() {
+            console.log('Loading complete product catalog...');
+
+            // Load from localStorage if available, otherwise use defaults
+            const savedProducts = localStorage.getItem('zenchain_products');
+
+            if (savedProducts) {
+                window.appState.products = JSON.parse(savedProducts);
+                console.log('Loaded saved inventory from localStorage');
+            } else {
+                window.appState.products = [
+                    { id: 1, name: 'ZenChain Gift Card - 10 ZTC', price: '10', category: 'digital', image: '💳', description: 'Digital gift card worth 10 ZTC tokens', delivery: 'Instant', stock: 100, badge: 'Popular' },
+                    { id: 2, name: 'ZenChain Gift Card - 25 ZTC', price: '25', category: 'digital', image: '💎', description: 'Premium gift card worth 25 ZTC tokens', delivery: 'Instant', stock: 50, badge: 'Best Value' },
+                    { id: 3, name: 'Amazon Gift Card - $25', price: '30', category: 'digital', image: '🎁', description: 'Digital Amazon gift card worth $25 USD', delivery: 'Instant', stock: 25 },
+                    { id: 4, name: 'Steam Gift Card - $20', price: '24', category: 'digital', image: '🎮', description: 'Steam platform gift card', delivery: 'Instant', stock: 40 },
+                    { id: 5, name: 'ZenChain Genesis NFT', price: '50', category: 'nft', image: '🖼️', description: 'Exclusive genesis collection NFT', delivery: 'Instant', stock: 10, badge: 'Limited Edition' },
+                    { id: 6, name: 'Crypto Punk Style Avatar', price: '35', category: 'nft', image: '👤', description: 'Pixel art avatar NFT', delivery: 'Instant', stock: 25 },
+                    { id: 7, name: 'Gaming Mouse RGB Pro', price: '45', category: 'gaming', image: '🖱️', description: 'High-precision gaming mouse with RGB lighting', delivery: '3-5 days', stock: 15 },
+                    { id: 8, name: 'Mechanical Keyboard', price: '85', category: 'gaming', image: '⌨️', description: 'RGB mechanical keyboard', delivery: '3-5 days', stock: 12, badge: 'Pro Gaming' },
+                    { id: 9, name: 'ZenChain Premium Hoodie', price: '45', category: 'apparel', image: '👕', description: 'Premium quality hoodie', delivery: '3-5 days', stock: 30 },
+                    { id: 10, name: 'Crypto T-Shirt Collection', price: '25', category: 'apparel', image: '👔', description: 'Stylish blockchain-themed t-shirt', delivery: '3-5 days', stock: 50 },
+                    { id: 11, name: 'Hardware Wallet', price: '120', category: 'accessories', image: '🔐', description: 'Secure crypto storage', delivery: '3-5 days', stock: 8, badge: 'Security' },
+                    { id: 12, name: 'ZenChain Coffee Mug', price: '15', category: 'accessories', image: '☕', description: 'High-quality ceramic mug', delivery: '3-5 days', stock: 60 }
+                ];
+
+                // Save default inventory
+                saveProducts();
+                console.log('Initialized default product catalog');
+            }
+
+            console.log('Loaded', window.appState.products.length, 'products');
+            renderProducts();
+        }
+
+        // Save products to localStorage
+        function saveProducts() {
+            localStorage.setItem('zenchain_products', JSON.stringify(window.appState.products));
+            console.log('Products saved to localStorage');
+        }
+
+        // INVENTORY MANAGEMENT FUNCTIONS
+        function decreaseStock(productId, quantity = 1) {
+            const product = window.appState.products.find(p => p.id === productId);
+            if (product) {
+                product.stock = Math.max(0, product.stock - quantity);
+                saveProducts();
+                console.log(`Decreased stock for ${product.name}: ${product.stock} remaining`);
+
+                if (product.stock === 0) {
+                    showNotification(`📦 ${product.name} is now sold out!`, 'warning', 3000);
+                } else if (product.stock <= 5) {
+                    showNotification(`⚠️ Low stock: Only ${product.stock} ${product.name} remaining`, 'warning', 2000);
+                }
+
+                renderProducts(); // Re-render to update UI
+                return true;
+            }
+            return false;
+        }
+
+        function increaseStock(productId, quantity = 1) {
+            const product = window.appState.products.find(p => p.id === productId);
+            if (product) {
+                product.stock += quantity;
+                saveProducts();
+                console.log(`Increased stock for ${product.name}: ${product.stock} available`);
+                renderProducts();
+                return true;
+            }
+            return false;
+        }
+
+        // Add new product (for admin dashboard)
+        function addNewProduct(productData) {
+            const newId = Math.max(...window.appState.products.map(p => p.id)) + 1;
+            const newProduct = {
+                id: newId,
+                name: productData.name,
+                price: productData.price,
+                category: productData.category,
+                image: productData.image || '📦',
+                description: productData.description,
+                delivery: productData.delivery || 'Instant',
+                stock: productData.stock || 1,
+                badge: productData.badge || ''
+            };
+
+            window.appState.products.push(newProduct);
+            saveProducts();
+            renderProducts();
+
+            showNotification(`✅ Added new product: ${newProduct.name}`, 'success');
+            return newProduct;
+        }
+
+        // Render Products with STOCK STATUS
+        function renderProducts() {
+            const container = document.getElementById('products-container');
+            if (!container) return;
+
+            let products = [...window.appState.products];
+
+            // Apply filters
+            if (window.appState.store.currentCategory !== 'all') {
+                products = products.filter(p => p.category === window.appState.store.currentCategory);
+            }
+
+            if (window.appState.store.searchTerm) {
+                const term = window.appState.store.searchTerm.toLowerCase();
+                products = products.filter(p => 
+                    p.name.toLowerCase().includes(term) || 
+                    p.description.toLowerCase().includes(term)
+                );
+            }
+
+            // Sort products
+            if (window.appState.store.sortFilter === 'price-low') {
+                products.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+            } else if (window.appState.store.sortFilter === 'price-high') {
+                products.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+            } else if (window.appState.store.sortFilter === 'name-az') {
+                products.sort((a, b) => a.name.localeCompare(b.name));
+            }
+
+            if (products.length === 0) {
+                container.innerHTML = '<div class="loading-message">No products found matching your criteria.</div>';
+                return;
+            }
+
+            container.innerHTML = products.map(product => {
+                const isInWishlist = window.appState.wishlist.includes(product.id);
+                const heartIcon = isInWishlist ? '❤️' : '🤍';
+                const isSoldOut = product.stock === 0;
+                const isLowStock = product.stock > 0 && product.stock <= 5;
+
+                let stockDisplay = `Stock: ${product.stock} available`;
+                let stockClass = 'product-stock';
+
+                if (isSoldOut) {
+                    stockDisplay = 'SOLD OUT';
+                    stockClass = 'product-stock sold-out';
+                } else if (isLowStock) {
+                    stockDisplay = `Only ${product.stock} left!`;
+                    stockClass = 'product-stock low-stock';
+                }
+
+                return `
+                <div class="product-card ${isSoldOut ? 'sold-out' : ''}">
+                    <div class="product-image-container">
+                        <div class="product-image emoji">${product.image}</div>
+                        ${isSoldOut ? '<div class="sold-out-badge">SOLD OUT</div>' : 
+                          (product.badge ? `<div class="product-badge">${product.badge}</div>` : '')}
+                    </div>
+
+                    <div class="product-info">
+                        <h3 class="product-title">${product.name}</h3>
+                        <p class="product-description">${product.description}</p>
+
+                        <div class="product-price-row">
+                            <span class="product-price">${product.price} ZTC</span>
+                            <span class="delivery-badge">${product.delivery}</span>
+                        </div>
+
+                        <div class="${stockClass}">${stockDisplay}</div>
+
+                        <div class="product-actions">
+                            <button class="quick-add" ${isSoldOut ? 'disabled' : ''} onclick="addToCart(${product.id})">
+                                ${isSoldOut ? 'Sold Out' : 'Add to Cart'}
+                            </button>
+                            <button class="wishlist-btn ${isInWishlist ? 'loved' : ''}" onclick="toggleWishlist(${product.id})" data-product-id="${product.id}">
+                                ${heartIcon}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // WISHLIST FUNCTIONS
+        function toggleWishlist(productId) {
+            const product = window.appState.products.find(p => p.id === productId);
+            if (!product) return;
+
+            const wishlistIndex = window.appState.wishlist.indexOf(productId);
+
+            if (wishlistIndex > -1) {
+                window.appState.wishlist.splice(wishlistIndex, 1);
+                showNotification(`${product.name} removed from wishlist`, 'info', 2000);
+            } else {
+                window.appState.wishlist.push(productId);
+                showNotification(`${product.name} added to wishlist`, 'success', 2000);
+            }
+
+            localStorage.setItem('zenchain_wishlist', JSON.stringify(window.appState.wishlist));
+            updateWishlistButton(productId);
+        }
+
+        function updateWishlistButton(productId) {
+            const isInWishlist = window.appState.wishlist.includes(productId);
+            const button = document.querySelector(`[data-product-id="${productId}"]`);
+
+            if (button) {
+                button.innerHTML = isInWishlist ? '❤️' : '🤍';
+                button.className = isInWishlist ? 'wishlist-btn loved' : 'wishlist-btn';
+            }
+        }
+
+        // CART FUNCTIONS with STOCK VALIDATION
+        function addToCart(productId) {
+            const product = window.appState.products.find(p => p.id === productId);
+            if (!product) return;
+
+            // Check if product is sold out
+            if (product.stock === 0) {
+                showNotification(`Sorry, ${product.name} is sold out!`, 'error');
+                return;
+            }
+
+            const existingItem = window.appState.cart.find(item => item.id === productId);
+            let requestedQuantity = 1;
+
+            if (existingItem) {
+                requestedQuantity = existingItem.quantity + 1;
+            }
+
+            // Check if requested quantity exceeds stock
+            if (requestedQuantity > product.stock) {
+                showNotification(`Only ${product.stock} ${product.name} available in stock!`, 'warning');
+                return;
+            }
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                window.appState.cart.push({
+                    id: productId,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    quantity: 1
+                });
+            }
+
+            localStorage.setItem('zenchain_cart', JSON.stringify(window.appState.cart));
+            updateCartDisplay();
+            updateCartCounter();
+            showNotification(`${product.name} added to cart`);
+        }
+
+        function removeFromCart(productId) {
+            const item = window.appState.cart.find(item => item.id === productId);
+            if (item) {
+                window.appState.cart = window.appState.cart.filter(item => item.id !== productId);
+                localStorage.setItem('zenchain_cart', JSON.stringify(window.appState.cart));
+                updateCartDisplay();
+                updateCartCounter();
+                showNotification(`${item.name} removed from cart`, 'info');
+            }
+        }
+
+        function updateCartQuantity(productId, newQuantity) {
+            if (newQuantity <= 0) {
+                removeFromCart(productId);
+                return;
+            }
+
+            const product = window.appState.products.find(p => p.id === productId);
+            if (product && newQuantity > product.stock) {
+                showNotification(`Only ${product.stock} ${product.name} available!`, 'warning');
+                return;
+            }
+
+            const item = window.appState.cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity = newQuantity;
+                localStorage.setItem('zenchain_cart', JSON.stringify(window.appState.cart));
+                updateCartDisplay();
+                updateCartCounter();
+            }
+        }
+
+        function clearCart() {
+            window.appState.cart = [];
+            localStorage.setItem('zenchain_cart', JSON.stringify(window.appState.cart));
+            updateCartDisplay();
+            updateCartCounter();
+            showNotification('Cart cleared');
+        }
+
+        function updateCartDisplay() {
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total-amount');
+
+            if (!cartItems || !cartTotal) return;
+
+            if (window.appState.cart.length === 0) {
+                cartItems.innerHTML = '<div class="empty-cart">Your cart is empty<br><small>Add some products to get started!</small></div>';
+                cartTotal.textContent = '0.00 ZTC';
+                return;
+            }
+
+            cartItems.innerHTML = window.appState.cart.map(item => `
+                <div class="cart-item">
+                    <div class="cart-item-image emoji">${item.image}</div>
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">${item.price} ZTC each</div>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="updateCartQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                            <span class="quantity-display">${item.quantity}</span>
+                            <button class="quantity-btn" onclick="updateCartQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                            <button class="cart-item-remove" onclick="removeFromCart(${item.id})">×</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            const total = window.appState.cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+            cartTotal.textContent = total.toFixed(2) + ' ZTC';
+        }
+
+        function updateCartCounter() {
+            const counter = document.getElementById('cart-counter');
+            if (counter) {
+                const totalItems = window.appState.cart.reduce((sum, item) => sum + item.quantity, 0);
+                counter.textContent = totalItems;
+                counter.style.display = totalItems > 0 ? 'inline-block' : 'none';
+            }
+        }
+
+        function toggleCart() {
+            const cartPanel = document.getElementById('cart-panel');
+            const cartOverlay = document.getElementById('cart-overlay');
+
+            if (!cartPanel) return;
+
+            window.appState.store.cartOpen = !window.appState.store.cartOpen;
+
+            if (window.appState.store.cartOpen) {
+                cartPanel.classList.add('open');
+                if (cartOverlay) cartOverlay.classList.add('open');
+                updateCartDisplay();
+            } else {
+                cartPanel.classList.remove('open');
+                if (cartOverlay) cartOverlay.classList.remove('open');
+            }
+        }
+
+        // ENHANCED CHECKOUT
+        async function checkoutCart() {
+            console.log('🛒 Starting checkout with inventory management...');
+
+            if (window.appState.cart.length === 0) {
+                showNotification('Your cart is empty', 'warning');
+                return;
+            }
+
+            const totalAmount = window.appState.cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+            console.log('💰 Total checkout amount:', totalAmount, 'ZTC');
+
+            // Validate stock availability before checkout
+            for (const item of window.appState.cart) {
+                const product = window.appState.products.find(p => p.id === item.id);
+                if (!product) {
+                    showNotification(`Product ${item.name} not found!`, 'error');
+                    return;
+                }
+                if (product.stock < item.quantity) {
+                    showNotification(`Insufficient stock for ${item.name}! Only ${product.stock} available.`, 'error');
+                    return;
+                }
+            }
+
+            // Check if wallet is connected
+            if (!window.appState.wallet.connected) {
+                showNotification('Please connect your wallet to checkout', 'warning');
+                setTimeout(() => connectWallet(), 1000);
+                return;
+            }
+
+            // Check if user has sufficient balance
+            const userBalance = parseFloat(window.appState.wallet.balance);
+            if (userBalance < totalAmount) {
+                showNotification(`Insufficient balance. You need ${totalAmount.toFixed(2)} ZTC but have ${userBalance.toFixed(4)} ZTC`, 'error');
+                return;
+            }
+
+            try {
+                // Show loading state
+                const checkoutBtn = document.getElementById('checkout-btn');
+                if (checkoutBtn) {
+                    checkoutBtn.disabled = true;
+                    checkoutBtn.textContent = 'Processing...';
+                }
+
+                showNotification(`Processing checkout for ${totalAmount.toFixed(2)} ZTC...`, 'info');
+
+                let totalSuccessful = 0;
+                let totalFailed = 0;
+                let hadBlockchainAttempts = false;
+
+                // Process each item in cart
+                for (const item of window.appState.cart) {
+                    try {
+                        console.log(`🔄 Processing item: ${item.name} x${item.quantity}`);
+
+                        let blockchainSuccess = false;
+                        let attemptedBlockchain = false;
+
+                        if (window.appState.wallet.signer && 
+                            window.appState.contract.address && 
+                            window.appState.contract.address !== '0x0000000000000000000000000000000000000000' &&
+                            window.appState.wallet.connected) {
+
+                            console.log('🔗 Attempting blockchain purchase...');
+                            attemptedBlockchain = true;
+                            hadBlockchainAttempts = true;
+
+                            blockchainSuccess = await purchaseProductOnChain(item.id, item.quantity);
+                        }
+
+                        if (attemptedBlockchain) {
+                            if (blockchainSuccess) {
+                                totalSuccessful++;
+                                // DECREASE STOCK on successful purchase
+                                decreaseStock(item.id, item.quantity);
+                                console.log(`✅ Blockchain purchase successful for ${item.name} - Stock updated`);
+                            } else {
+                                totalFailed++;
+                                console.log(`❌ Blockchain purchase failed for ${item.name}`);
+                            }
+                        } else {
+                            // Demo mode
+                            console.log(`🎭 Demo mode: ${item.name} (no blockchain connection)`);
+
+                            showNotification(`Demo: Processing ${item.name}...`, 'info', 1500);
+                            await new Promise(resolve => setTimeout(resolve, 1500));
+
+                            totalSuccessful++;
+                            // DECREASE STOCK even in demo mode (for testing)
+                            decreaseStock(item.id, item.quantity);
+                            showNotification(`✅ Demo Purchase: ${item.name} - Stock updated`, 'success', 2000);
+                        }
+
+                    } catch (error) {
+                        console.error(`❌ Error processing ${item.name}:`, error);
+                        totalFailed++;
+                        showNotification(`❌ Failed: ${item.name}`, 'error', 2000);
+                    }
+                }
+
+                // Final results
+                console.log(`Final results: ${totalSuccessful} successful, ${totalFailed} failed`);
+
+                if (totalSuccessful > 0 && totalFailed === 0) {
+                    const modeText = hadBlockchainAttempts ? 'Blockchain' : 'Demo';
+                    showNotification(`🎉 ${modeText} Purchase Complete! ${totalSuccessful} item${totalSuccessful > 1 ? 's' : ''} purchased successfully! Stock updated.`, 'success', 5000);
+
+                    clearCart();
+                    setTimeout(() => toggleCart(), 2000);
+                    celebrateSuccess();
+
+                } else if (totalSuccessful > 0 && totalFailed > 0) {
+                    showNotification(`⚠️ Partial Success: ${totalSuccessful} purchased, ${totalFailed} failed. Stock updated for successful items.`, 'warning', 6000);
+
+                    // Remove successfully purchased items from cart
+                    // (This would require more complex logic to track which items succeeded)
+
+                } else {
+                    showNotification(`❌ Purchase Failed: No items were purchased. Stock unchanged.`, 'error', 6000);
+                }
+
+                // Update wallet balance if we made blockchain attempts
+                if (hadBlockchainAttempts && window.appState.wallet.connected) {
+                    setTimeout(() => updateWalletBalance(), 3000);
+                }
+
+            } catch (error) {
+                console.error('❌ Checkout failed:', error);
+                showNotification('Checkout failed: ' + error.message, 'error');
+            } finally {
+                // Restore checkout button
+                const checkoutBtn = document.getElementById('checkout-btn');
+                if (checkoutBtn) {
+                    checkoutBtn.disabled = false;
+                    checkoutBtn.textContent = 'Checkout with ZTC';
+                }
+            }
+        }
+
+        // BLOCKCHAIN PURCHASE FUNCTION 
+        async function purchaseProductOnChain(productId, quantity) {
+            console.log(`🔗 Starting blockchain purchase for product ${productId}`);
+
+            try {
+                if (!window.appState.wallet.signer) {
+                    console.log('❌ No signer available');
+                    return false;
+                }
+
+                if (!window.appState.contract.address || 
+                    window.appState.contract.address === '0x0000000000000000000000000000000000000000') {
+                    console.log('❌ No valid contract address');
+                    return false;
+                }
+
+                const contractABI = [
+                    "function purchaseWithZTC(uint256 _productId, uint256 _quantity) external payable"
+                ];
+
+                const contract = new ethers.Contract(
+                    window.appState.contract.address,
+                    contractABI,
+                    window.appState.wallet.signer
+                );
+
+                const product = window.appState.products.find(p => p.id === productId);
+                if (!product) {
+                    console.error('❌ Product not found:', productId);
+                    return false;
+                }
+
+                const totalPrice = ethers.parseEther((parseFloat(product.price) * quantity).toString());
+
+                console.log(`📡 Submitting blockchain transaction...`);
+                console.log(`   Product: ${product.name}`);
+                console.log(`   Quantity: ${quantity}`);
+                console.log(`   Price: ${ethers.formatEther(totalPrice)} ZTC`);
+
+                showNotification(`Blockchain: Submitting ${product.name}...`, 'info', 3000);
+
+                const tx = await contract.purchaseWithZTC(productId, quantity, {
+                    value: totalPrice,
+                    gasLimit: 300000
+                });
+
+                console.log('📡 Transaction submitted with hash:', tx.hash);
+                showNotification(`TX submitted: ${tx.hash.substring(0, 10)}...`, 'info', 4000);
+
+                console.log('⏳ Waiting for transaction confirmation...');
+                const receipt = await Promise.race([
+                    tx.wait(),
+                    new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Transaction confirmation timeout')), 60000)
+                    )
+                ]);
+
+                console.log('📋 Transaction receipt received:', {
+                    hash: receipt.hash,
+                    status: receipt.status,
+                    blockNumber: receipt.blockNumber,
+                    gasUsed: receipt.gasUsed.toString()
+                });
+
+                if (receipt && receipt.status === 1) {
+                    console.log('✅ BLOCKCHAIN SUCCESS - Transaction confirmed with status 1');
+                    showNotification(`✅ Blockchain Success: ${product.name}`, 'success', 3000);
+                    return true;
+                } else if (receipt && receipt.status === 0) {
+                    console.log('❌ BLOCKCHAIN FAILED - Transaction status 0 (failed)');
+                    showNotification(`❌ Transaction Failed: ${product.name}`, 'error', 4000);
+                    return false;
+                } else {
+                    console.log('❌ BLOCKCHAIN UNKNOWN - Invalid receipt:', receipt);
+                    showNotification(`❌ Transaction Error: ${product.name}`, 'error', 4000);
+                    return false;
+                }
+
+            } catch (error) {
+                console.error('❌ Blockchain purchase exception:', error);
+
+                if (error.code === 'ACTION_REJECTED' || error.code === 4001) {
+                    console.log('🚫 User cancelled transaction');
+                    showNotification('❌ Transaction cancelled by user', 'warning', 5000);
+                } else if (error.message && error.message.toLowerCase().includes('insufficient')) {
+                    console.log('💸 Insufficient funds');
+                    showNotification('❌ Insufficient funds for transaction', 'error', 5000);
+                } else if (error.message && error.message.toLowerCase().includes('timeout')) {
+                    console.log('⏰ Transaction timeout');
+                    showNotification('⚠️ Transaction timed out - check your wallet', 'warning', 5000);
+                } else if (error.reason) {
+                    console.log('📜 Contract error:', error.reason);
+                    showNotification(`❌ Contract Error: ${error.reason}`, 'error', 5000);
+                } else {
+                    console.log('🔥 Unknown error:', error.message);
+                    showNotification(`❌ Transaction Error: ${error.message.substring(0, 50)}`, 'error', 5000);
+                }
+
+                return false;
+            }
+        }
+
+        // Category Functions
+        function setCategory(category) {
+            window.appState.store.currentCategory = category;
+
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`[data-category="${category}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            renderProducts();
+        }
+
+        // Search Functions
+        function handleSearch() {
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                window.appState.store.searchTerm = searchInput.value;
+                renderProducts();
+            }
+        }
+
+        function handleSort() {
+            const sortSelect = document.getElementById('sort-select');
+            if (sortSelect) {
+                window.appState.store.sortFilter = sortSelect.value;
+                renderProducts();
+            }
+        }
+
+        // Wallet Functions
+        async function connectWallet() {
+            if (!window.ethereum) {
+                showNotification('Please install MetaMask!', 'error');
+                return;
+            }
+
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                if (accounts.length === 0) return;
+
+                window.appState.wallet.provider = new ethers.BrowserProvider(window.ethereum);
+                window.appState.wallet.signer = await window.appState.wallet.provider.getSigner();
+                window.appState.wallet.address = accounts[0];
+                window.appState.wallet.connected = true;
+
+                await switchToZenChain();
+                await updateWalletBalance();
+
+                updateWalletDisplay();
+                showNotification('Wallet connected successfully!');
+            } catch (error) {
+                showNotification('Failed to connect wallet: ' + error.message, 'error');
+            }
+        }
+
+        async function switchToZenChain() {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: ZENCHAIN_CONFIG.chainIdHex }],
+                });
+            } catch (switchError) {
+                if (switchError.code === 4902) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [ZENCHAIN_CONFIG],
+                        });
+                    } catch (addError) {
+                        showNotification('Failed to add ZenChain network', 'error');
+                    }
+                }
+            }
+        }
+
+        async function updateWalletBalance() {
+            if (!window.appState.wallet.provider || !window.appState.wallet.address) return;
+
+            try {
+                const balance = await window.appState.wallet.provider.getBalance(window.appState.wallet.address);
+                window.appState.wallet.balance = ethers.formatEther(balance);
+                updateWalletDisplay();
+            } catch (error) {
+                console.error('Error updating balance:', error);
+            }
+        }
+
+        function disconnectWallet() {
+            window.appState.wallet = { connected: false, address: null, balance: '0', provider: null, signer: null, chainId: null };
+            updateWalletDisplay();
+            showNotification('Wallet disconnected');
+        }
+
+        function updateWalletDisplay() {
+            const walletConnected = document.getElementById('wallet-connected');
+            const walletDisconnected = document.getElementById('wallet-disconnected');
+            const walletAddress = document.getElementById('wallet-address');
+            const walletBalance = document.getElementById('wallet-balance');
+
+            if (window.appState.wallet.connected) {
+                if (walletConnected) walletConnected.style.display = 'flex';
+                if (walletDisconnected) walletDisconnected.style.display = 'none';
+
+                if (walletAddress && window.appState.wallet.address) {
+                    const shortAddress = `${window.appState.wallet.address.substring(0, 4)}...${window.appState.wallet.address.substring(38)}`;
+                    walletAddress.textContent = shortAddress;
+                }
+                if (walletBalance) {
+                    walletBalance.textContent = `${parseFloat(window.appState.wallet.balance).toFixed(4)} ZTC`;
+                }
+            } else {
+                if (walletConnected) walletConnected.style.display = 'none';
+                if (walletDisconnected) walletDisconnected.style.display = 'flex';
+            }
+        }
+
+        function celebrateSuccess() {
+            const celebration = document.createElement('div');
+            celebration.innerHTML = '🎉🎉🎉';
+            celebration.style.cssText = `
+                position: fixed; top: 50%; left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 3rem; z-index: 9999; pointer-events: none;
+                animation: celebrate 2s ease-out forwards;
+            `;
+
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes celebrate {
+                    0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+                    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+                    100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+                }
+            `;
+            document.head.appendChild(style);
+            document.body.appendChild(celebration);
+
+            setTimeout(() => {
+                if (celebration.parentNode) celebration.parentNode.removeChild(celebration);
+                if (style.parentNode) style.parentNode.removeChild(style);
+            }, 2000);
+        }
+
+        // Initialize Event Listeners
+        function initializeEventListeners() {
+            const connectBtn = document.getElementById('connect-wallet');
+            if (connectBtn) connectBtn.addEventListener('click', connectWallet);
+
+            const disconnectBtn = document.getElementById('disconnect-wallet');
+            if (disconnectBtn) disconnectBtn.addEventListener('click', disconnectWallet);
+
+            const cartToggle = document.getElementById('cart-toggle');
+            if (cartToggle) cartToggle.addEventListener('click', toggleCart);
+
+            const cartClose = document.getElementById('cart-close');
+            if (cartClose) cartClose.addEventListener('click', toggleCart);
+
+            const cartOverlay = document.getElementById('cart-overlay');
+            if (cartOverlay) cartOverlay.addEventListener('click', toggleCart);
+
+            const clearCartBtn = document.getElementById('clear-cart');
+            if (clearCartBtn) clearCartBtn.addEventListener('click', clearCart);
+
+            const checkoutBtn = document.getElementById('checkout-btn');
+            if (checkoutBtn) checkoutBtn.addEventListener('click', checkoutCart);
+
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', handleSearch);
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') handleSearch();
+                });
+            }
+
+            const sortSelect = document.getElementById('sort-select');
+            if (sortSelect) sortSelect.addEventListener('change', handleSort);
+
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('category-btn')) {
+                    const category = e.target.getAttribute('data-category');
+                    if (category) setCategory(category);
+                }
+            });
+
+            console.log('✅ Event listeners initialized');
+        }
+
+        // Initialize App
+        function initializeApp() {
+            console.log('🚀 Initializing ZenChain Store Complete System...');
+
+            if (typeof ethers === 'undefined') {
+                console.error('❌ Ethers.js not loaded');
+                document.getElementById('products-container').innerHTML = 
+                    '<div class="loading-message">Failed to load Web3 library. Please refresh the page.</div>';
+                return;
+            }
+
+            initializeEventListeners();
+            updateWalletDisplay();
+            updateCartDisplay();
+            updateCartCounter();
+            loadProducts();
+
+            console.log('✅ ZenChain Store Complete System initialized successfully');
+            showNotification('Welcome to ZenChain Store! 🛒', 'success', 2500);
+        }
+
+        // Initialize when ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            if (typeof ethers !== 'undefined') {
+                initializeApp();
+            } else {
+                setTimeout(initializeApp, 1000);
+            }
+        }
+
+        // GLOBAL FUNCTIONS for Admin Dashboard access
+        window.zenChainStore = {
+            products: () => window.appState.products,
+            addProduct: addNewProduct,
+            increaseStock: increaseStock,
+            decreaseStock: decreaseStock,
+            saveProducts: saveProducts
+        };
+    </script>
+</body>
+</html>

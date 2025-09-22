@@ -1,0 +1,26 @@
+{
+  "name": "zenchain-dapp-store-final",
+  "version": "1.2.0",
+  "description": "Complete ZenChain DApp store with working cart and multiple categories",
+  "main": "index.html",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat run scripts/deploy.js --network zenchain",
+    "verify": "npx hardhat verify --network zenchain",
+    "test": "npx hardhat test",
+    "serve": "npx http-server -p 8000",
+    "dev": "python3 -m http.server 8000"
+  },
+  "dependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "dotenv": "^16.3.1",
+    "ethers": "^5.7.2",
+    "hardhat": "^2.17.2"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "keywords": ["zenchain", "dapp", "cart", "categories", "working", "fixed"],
+  "author": "ZenChain Developer",
+  "license": "MIT"
+}

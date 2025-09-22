@@ -1,0 +1,16 @@
+{
+  "contractAddress": "0xF0f7506da8f5e41a24a398E0BDc02456C0c07fc1",
+  "deployer": "0x265de5832e6c431b8CD1872B2728bC10C2e366cb",
+  "network": "zenchain",
+  "deploymentTime": "2025-09-22T18:37:45.062Z",
+  "transactionHash": "0xa2880b8f146476055a7c9a46353ae2c9eb37643ae53d794778be65fb381b9319",
+  "categories": [
+    "digital",
+    "nft",
+    "gaming",
+    "apparel",
+    "accessories",
+    "collectibles"
+  ],
+  "productCount": 11
+}
