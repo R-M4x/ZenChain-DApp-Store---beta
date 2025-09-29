@@ -1,5 +1,3 @@
-# Zenchain store beta
-
 # 🛒 ZenChain DApp Store - beta
 Web3 Dapp that can be used for NFT marketplace or any digital or phyisical products.
 
