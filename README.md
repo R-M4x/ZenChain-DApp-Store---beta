@@ -1,2 +1,2 @@
-# Zenstore-test
+# Zenchain store beta
 Zenchain dapp store
