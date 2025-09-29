@@ -1,7 +1,7 @@
-/* ZenChain Store - Complete Styling with Fixed Cart Design */
+/* ZenChain Store */
 
 :root {
-    /* ZenChain Brand Colors */
+    /* ZenChain Colors */
     --primary-green: #00FF88;
     --secondary-cyan: #00CCDD;
     --tertiary-lime: #88FF44;
@@ -790,7 +790,7 @@ body {
     transform: scale(1.1);
 }
 
-/* IMPROVED CART FOOTER */
+/*CART FOOTER */
 .cart-footer {
     padding: 1.5rem;
     border-top: 2px solid var(--border-green);
@@ -1039,8 +1039,13 @@ body {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .loading-text {
@@ -1146,4 +1151,189 @@ body {
 *:focus {
     outline: 2px solid var(--primary-green);
     outline-offset: 2px;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-green);
+    border-radius: 8px;
+    background: var(--surface-green);
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.edit-btn {
+    border-color: var(--primary-green);
+    background: rgba(0, 255, 136, 0.1);
+    color: var(--primary-green);
+}
+
+.edit-btn:hover {
+    background: var(--primary-green);
+    color: var(--background-dark);
+    transform: translateY(-2px);
+}
+
+.delete-btn {
+    border-color: var(--error-red);
+    background: rgba(255, 71, 87, 0.1);
+    color: var(--error-red);
+}
+
+.delete-btn:hover:not(:disabled) {
+    background: var(--error-red);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.delete-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.cart-popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #00FF88, #00CCDD);
+    color: #0D1F1A;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 255, 136, 0.3);
+    z-index: 9999;
+    transform: translateX(400px);
+    transition: all 0.3s ease-in-out;
+    max-width: 350px;
+    min-width: 250px;
+}
+
+.cart-popup.show {
+    transform: translateX(0);
+}
+
+.cart-popup-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.cart-popup-icon {
+    font-size: 1.5rem;
+    animation: bounce 0.6s ease-in-out;
+}
+
+.cart-popup-text {
+    flex: 1;
+}
+
+.cart-popup-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+}
+
+.cart-popup-message {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.cart-popup-close {
+    background: none;
+    border: none;
+    color: #0D1F1A;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.7;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.cart-popup-close:hover {
+    opacity: 1;
+    background: rgba(13, 31, 26, 0.1);
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    60%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-10px);
+    }
+
+    80% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Enhanced Cart Counter */
+.cart-counter {
+    background: var(--zen-gradient);
+    color: var(--background-dark);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    min-width: 24px;
+    text-align: center;
+    display: inline-block;
+    animation: pulse 0.3s ease-in-out;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    border: 2px solid var(--surface-green);
+}
+
+.cart-counter.updated {
+    animation: cartBounce 0.5s ease-in-out;
+}
+
+@keyframes cartBounce {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Cart Button Enhancement */
+.cart-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface-green);
+    border: 1px solid var(--border-green);
+    border-radius: 12px;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-medium);
+    text-decoration: none;
+}
+
+.cart-btn:hover {
+    background: var(--surface-hover);
+    border-color: var(--primary-green);
+    box-shadow: var(--glow-green);
 }
