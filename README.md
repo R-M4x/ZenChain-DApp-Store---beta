@@ -5,12 +5,7 @@ Web3 Dapp that can be used for NFT marketplace or any digital or phyisical produ
 
 ### **Setup guide**
 
-### **1. Local Development**
 ```bash
-# Clone and setup
-git clone <your-repo>
-cd zenchain-dapp-store-final
-
 # Install dependencies
 npm install
 
@@ -29,13 +24,9 @@ npm run deploy
 npm run serve
 ```
 
-### **2. Smart Contract Deployment**
-```bash
-# Deploy with all categories
-npm run deploy
-
+### **Folder arrangement** ###
 ```
-zenchain-dapp-store-final/
+zenchain-dapp-store/
 ├── index.html               
 ├── style.css                
 ├── app.js                  
